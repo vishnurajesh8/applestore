@@ -21,8 +21,9 @@ const Cart = () => {
           Authorization: `Bearer ${token}`,
         },
        };
-       const response = await axios.get('http://127.0.0.1:8000/api/add_to_cart/',authConfig)
+       const response = await axios.get('http://127.0.0.1:8000/api/cart/',authConfig)
        if(response.status==200){
+        console.log(response.data)
         setCartItems(response.data)
        }
     }catch(err){
@@ -48,10 +49,10 @@ const Cart = () => {
       
       const config = {
         headers: {  
-          Authorization: Bearer `${token}`, 
+          Authorization: `Bearer ${token}`, 
         },
       };
-      const response = await axios.post('http://127.0.0.1:8000/add_to_cart/${id}', {"quantity":quantity}, authConfig);
+      const response = await axios.post(`http://127.0.0.1:8000/api/add_to_cart/${product_id}/`, {"quantity":quantity}, config);
 
     
     } catch (error) {
@@ -87,10 +88,10 @@ const Cart = () => {
      
       const config = {
         headers: {  
-          Authorization: Bearer `${token}`, 
+          Authorization: `Bearer ${token}`, 
         },
       };
-      const response = await axios.delete('http://127.0.0.1:8000/delete_cart/${cart_id}',config);
+      const response = await axios.delete(`http://127.0.0.1:8000/api/delete_cart/${cart_id}/`,config);
 
     
     } catch (error) {
@@ -106,8 +107,9 @@ const Cart = () => {
     setCartItems((cartItems) =>cartItems.filter((item) => item.id !== id));
   };
 
+
   const getTotalPrice = () => {
-    return cartItems.reduce((total, item) => total + item.product.product_price * item.quantity, 0);
+    return cartItems.reduce((total, item) => total + item.product.price * item.quantity, 0);
   };
 
   return (
@@ -123,19 +125,19 @@ const Cart = () => {
               <li key={item.id} className="flex items-center justify-between mb-6 border-b pb-6">
                 <div className="flex items-center space-x-6">
                   <img
-                    src={`http://127.0.0.1:8000/${item.product.images}`}
+                    src={`http://127.0.0.1:8000/${item.product.images[0].image}`}
                     alt={item.name}
                     className="w-20 h-20 object-cover rounded-lg shadow-md hover:scale-105 transition-all"
                   />
                   <div>
-                    <p className="text-lg font-medium text-gray-800">{item.name}</p>
-                    <p className="text-sm text-gray-500">${item.price}</p>
+                    <p className="text-lg font-medium text-gray-800">{item.product.name}</p>
+                    <p className="text-sm text-gray-500">${item.product.price}</p>
                   </div>
                 </div>
 
                 <div className="flex items-center space-x-4">
                   <button
-                    onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                    onClick={() => handleQuantityChange(item.id,  - 1,item.product.id,item.quantity)}
                     className="px-3 py-1 bg-gray-200 text-gray-600 rounded-full hover:bg-gray-300 transition-all"
                   >
                     -
@@ -143,11 +145,11 @@ const Cart = () => {
                   <input
                     type="number"
                     value={item.quantity}
-                    onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value))}
+                    onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value),item.product.id,item.quantity)}
                     className="w-16 text-center border border-gray-300 rounded-md shadow-sm"
                   />
                   <button
-                    onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                    onClick={() => handleQuantityChange(item.id, 1,item.product.id,item.quantity)}
                     className="px-3 py-1 bg-gray-200 text-gray-600 rounded-full hover:bg-gray-300 transition-all"
                   >
                     +

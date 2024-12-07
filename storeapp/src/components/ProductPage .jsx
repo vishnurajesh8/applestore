@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams,useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const ProductPage = () => {
@@ -7,6 +7,8 @@ const ProductPage = () => {
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [selectedImage, setSelectedImage] = useState('');
   const { id } = useParams();
+
+  const navigate = useNavigate()
 
   const BASE_URL = 'http://127.0.0.1:8000';
 
@@ -44,6 +46,8 @@ const ProductPage = () => {
   };
 
   const addCartHandler = async () => {
+    console.log(localStorage.getItem('token'));
+    
     try {
       const token = localStorage.getItem('token');
       if (!token) {

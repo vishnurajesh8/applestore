@@ -2,7 +2,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Product,Cart
-from .serializers import ProductSerializer
+from .serializers import ProductSerializer,CategorySerializer,CartSerializer
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import check_password,make_password
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -156,6 +156,7 @@ def register_view(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_to_cart(request, pk):
+    print(pk)
     cart_model=Cart()
 
     product = Product.objects.get(pk=pk)
@@ -174,30 +175,30 @@ def add_to_cart(request, pk):
         cart_model.save()
         return Response("Product Added to cart ")
 
-
-
-
-
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
-from .models import Cart, Product
-
-@api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
-def delete_cart_item(request, pk):
+@api_view(['GET'])
+def get_cart_products(request):
     """
-    Deletes a specific cart item for the authenticated user.
+    Fetch cart products of the logged-in user.
     """
-    user = request.user  # Get the authenticated user
-    product = get_object_or_404(Product, pk=pk)  # Retrieve the product
 
+
+    # Get the logged-in user's cart items
+    cart_items = Cart.objects.filter(user=request.user)
+
+    if not cart_items.exists():
+        return Response({"detail": "Your cart is empty."}, status=status.HTTP_404_NOT_FOUND)
+
+    # Serialize cart items
+    serializer = CartSerializer(cart_items, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+@permission_classes([IsAuthenticated])
+@api_view(['DELETE'])
+def delete_cart_item(request,id):
     try:
-        # Attempt to find the cart item for the user and product
-        cart_item = Cart.objects.get(product=product, user=user)
-        cart_item.delete()  # Delete the cart item
-        return Response("Product removed from cart successfully.")
+        cart_obj = Cart.objects.filter(user=request.user,id=id)
+        cart_obj.delete()
+        return  Response("item delete ")
     except Cart.DoesNotExist:
-        # If the cart item doesn't exist, return an error response
-        return Response("Product not found in cart.", status=404)
+        return Response({"error":"iteam not found"},status=status.HTTP_404_NOT_FOUND)
+

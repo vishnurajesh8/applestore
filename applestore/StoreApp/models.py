@@ -49,48 +49,13 @@ class ProductImage(models.Model):
 # Cart Model
 class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="cart")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE,related_name="cart",null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    quantity= models.IntegerField(default=1)
 
     def __str__(self):
         return f"Cart for {self.user.username}"
-
-    def total_price(self):
-        """Calculate the total price of all items in the cart."""
-        total = sum(item.total_item_price() for item in self.items.all())
-        return total
-
-    def add_item(self, product, quantity):
-        """Add a product to the cart."""
-        item, created = self.items.get_or_create(product=product)
-        if not created:
-            item.quantity += quantity
-        item.save()
-
-    def remove_item(self, product):
-        """Remove a product from the cart."""
-        item = self.items.filter(product=product).first()
-        if item:
-            item.delete()
-
-    def clear_cart(self):
-        """Clear all items from the cart."""
-        self.items.all().delete()
-
-
-# Cart Item Model
-class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="items")
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
-    added_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.quantity} of {self.product.name}"
-
-    def total_item_price(self):
-        """Calculate the price of this cart item."""
-        return self.product.price * self.quantity
 
 
 # Order Model
