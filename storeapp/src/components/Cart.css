@@ -1,0 +1,36 @@
+/* Custom styles for Cart component */
+
+/* Hover effects for cart items */
+.cart-item:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  /* Styling for buttons */
+  button:hover {
+    transform: translateY(-3px);
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  /* Styling for total section */
+  .total-section {
+    font-weight: bold;
+    font-size: 1.25rem;
+    color: #4a4a4a;
+    border-top: 1px solid #e2e2e2;
+    padding-top: 1rem;
+    margin-top: 1.5rem;
+  }
+  
+  .checkout-button {
+    padding: 12px 24px;
+    background-color: #3b82f6;
+    color: #fff;
+    border-radius: 9999px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .checkout-button:hover {
+    background-color: #2563eb;
+  }
+  
